@@ -6,6 +6,7 @@ const TodosContext = React.createContext({
   filters: {},
   filter: () => {},
   delete: (id) => {},
+  done: (id, done) => {},
   addFilters: (name, priority, state) => {},
   addSort: (priority, dueDate) => {},
 });
@@ -16,6 +17,14 @@ export const TodosContextProvider = (props) => {
   const deleteHandler = (id) => {
     setTodos((prevTodos) => prevTodos.filter((todo) => todo.todoId !== id));
   };
+  const doneHandler = (id, done) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) => {
+        if (todo.todoId !== id) todo.done = done;
+        return todo;
+      })
+    );
+  };
 
   const addFiltersHandler = (name, priority, state) => {
     let params = {};
@@ -24,7 +33,7 @@ export const TodosContextProvider = (props) => {
     if (state) params.done = state;
     setFilters(params);
   };
-  const getData = useCallback( async () => {
+  const getData = useCallback(async () => {
     try {
       let url = new URL(getApiUrl() + "/todos");
       for (const key in filters) {
@@ -43,7 +52,7 @@ export const TodosContextProvider = (props) => {
     } catch (err) {
       console.log(err.message);
     }
-  },[filters])
+  }, [filters]);
   useEffect(() => {
     getData();
   }, [filters, getData]);
@@ -52,6 +61,7 @@ export const TodosContextProvider = (props) => {
   const contextValue = {
     todos: todos,
     filters: filters,
+    done: doneHandler,
     delete: deleteHandler,
     addFilters: addFiltersHandler,
     addSort: addSortHandler,

@@ -43,6 +43,7 @@ const TodosTable = ({ todos }) => {
             <Todo
               key={todo.todoId}
               id={todo.todoId}
+              done={todo.doneFlag}
               name={todo.name}
               priority={todo.priority}
               dueDate={todo.dueDate}
