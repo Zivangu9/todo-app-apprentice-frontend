@@ -10,7 +10,7 @@ const Filter = () => {
   const priorityRef = useRef();
   const stateRef = useRef();
   const filterhandler = () => {
-    todosCotext.filter(
+    todosCotext.addFilters(
       nameRef.current.value,
       priorityRef.current.value,
       stateRef.current.value

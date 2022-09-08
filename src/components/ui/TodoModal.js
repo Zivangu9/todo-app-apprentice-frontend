@@ -1,6 +1,7 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useContext, useImperativeHandle, useRef, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { getApiUrl } from "../../helper/Api";
+import TodosContext from "../../store/todos-context";
 import Input from "./Input";
 import Select from "./Select";
 const TodoModal = forwardRef((props, ref) => {
@@ -10,6 +11,7 @@ const TodoModal = forwardRef((props, ref) => {
   const nameRef = useRef();
   const priotityRef = useRef();
   const dueDateRef = useRef();
+  const todosContext = useContext(TodosContext);
   useImperativeHandle(ref, () => ({ showModal: handleShow }));
   const handleCreteTodo = async () => {
     try {
@@ -39,6 +41,7 @@ const TodoModal = forwardRef((props, ref) => {
         return;
       }
       console.log("result is: ", JSON.stringify(result, null, 4));
+      todosContext.filter();
       handleClose();
     } catch (err) {
       console.log(err.message);

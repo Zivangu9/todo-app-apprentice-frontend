@@ -1,56 +1,61 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { getApiUrl } from "../helper/Api";
 
 const TodosContext = React.createContext({
   todos: [],
-  filter: (name, priority, state) => {},
-  sort: (priority, dueDate) => {},
+  filters: {},
+  filter: () => {},
+  delete: (id) => {},
+  addFilters: (name, priority, state) => {},
+  addSort: (priority, dueDate) => {},
 });
 
 export const TodosContextProvider = (props) => {
   const [todos, setTodos] = useState([]);
+  const [filters, setFilters] = useState({});
+  const deleteHandler = (id) => {
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.todoId !== id));
+  };
 
-  //   const userIsLoggedIn = !!token;
-
-  const filterHandler = async (name, priority, state) => {
+  const addFiltersHandler = (name, priority, state) => {
+    let params = {};
+    if (name) params.name = name;
+    if (priority) params.priority = priority;
+    if (state) params.done = state;
+    setFilters(params);
+  };
+  const getData = useCallback( async () => {
     try {
-      let params = {};
-      if (name) params.name = name;
-      if (priority) params.priority = priority;
-      if (state) params.done = state;
       let url = new URL(getApiUrl() + "/todos");
-      for (const key in params) {
-        url.searchParams.append(key, params[key]);
+      for (const key in filters) {
+        url.searchParams.append(key, filters[key]);
       }
-      console.log(url);
-      console.log(params);
-      
-      const response = await fetch(
-        url,
-        {
-          method: "GET",
-        }
-      );
+      const response = await fetch(url, {
+        method: "GET",
+      });
       if (!response.ok) {
         throw new Error(`Error! status: ${response.status}`);
       }
       const result = await response.json();
       // console.log("result is: ", JSON.stringify(result, null, 4));
-      console.log(result.content);
+      // console.log(result.content);
       setTodos(result.content);
     } catch (err) {
       console.log(err.message);
     }
-  };
-
-  const sortHandler = (priority, dueDate) => {
-    // setToken(null);
-  };
+  },[filters])
+  useEffect(() => {
+    getData();
+  }, [filters, getData]);
+  const addSortHandler = (priority, dueDate) => {};
 
   const contextValue = {
     todos: todos,
-    filter: filterHandler,
-    sort: sortHandler,
+    filters: filters,
+    delete: deleteHandler,
+    addFilters: addFiltersHandler,
+    addSort: addSortHandler,
+    filter: getData,
   };
 
   return (
