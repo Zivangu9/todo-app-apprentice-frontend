@@ -5,7 +5,7 @@ import Select from "../ui/Select";
 const Filter = () => {
   return (
     <Card>
-      <Card.Body gap>
+      <Card.Body>
         <Input label="Name" type="text" placeholder="Name of To Do" />
         <Row>
           <Col>

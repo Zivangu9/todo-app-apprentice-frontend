@@ -1,0 +1,12 @@
+table>thead>tr>th.sorting {
+    background-image: url(../../../public/bg.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
+}
+table>thead>tr>th.sorting.desc {
+    background-image: url(../../../public/desc.gif);
+}
+table>thead>tr>th.sorting.asc {
+    background-image: url(../../../public/asc.gif);
+}
