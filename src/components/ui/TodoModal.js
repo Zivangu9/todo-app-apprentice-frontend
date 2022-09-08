@@ -3,7 +3,6 @@ import { Button, Form, Modal } from "react-bootstrap";
 import { getApiUrl } from "../../helper/Api";
 import Input from "./Input";
 import Select from "./Select";
-const portalOverlays = document.getElementById("overlays");
 const TodoModal = forwardRef((props, ref) => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -41,7 +40,6 @@ const TodoModal = forwardRef((props, ref) => {
       }
       console.log("result is: ", JSON.stringify(result, null, 4));
       handleClose();
-      //   setData(result);
     } catch (err) {
       console.log(err.message);
     }

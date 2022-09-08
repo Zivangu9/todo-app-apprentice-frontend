@@ -1,28 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Table } from "react-bootstrap";
+import TodosContext from "../../store/todos-context";
 import Todo from "./Todo";
 import "./TodoTable.css";
 
-const DUMMY_DATA = [
-  {
-    todoId: 1,
-    name: "Todo 1",
-    priority: "Low",
-    dueDate: "2022-09-05",
-  },
-  {
-    todoId: 2,
-    name: "Todo 2",
-    priority: "Medium",
-    dueDate: "2022-09-05",
-  },
-  {
-    todoId: 3,
-    name: "Todo 3",
-    priority: "High",
-    dueDate: "2022-09-05",
-  },
-];
 const TodosTable = ({ todos }) => {
   const [priorirySort, setPrioritySort] = useState("");
   const prioritySortHandler = () => {
@@ -36,7 +17,8 @@ const TodosTable = ({ todos }) => {
     else if (dueDateSort === "asc") setDueDateSort("desc");
     else setDueDateSort("");
   };
-  todos = DUMMY_DATA;
+  const todosContext = useContext(TodosContext);
+  todos = todosContext.todos;
   return (
     <Table striped bordered hover>
       <thead>
