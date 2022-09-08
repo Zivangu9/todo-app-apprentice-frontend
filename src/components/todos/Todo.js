@@ -1,7 +1,7 @@
 import fontawesome from "@fortawesome/fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Col, Form, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { getApiUrl } from "../../helper/Api";
 import TodosContext from "../../store/todos-context";
@@ -10,12 +10,11 @@ fontawesome.library.add(faPen, faTrash);
 
 const Todo = ({ id, done, name, priority, dueDate }) => {
   const todosContext = useContext(TodosContext);
-  const [isDone, setIsDone] = useState(done);
   const checkHandler = async () => {
     try {
       const response = await fetch(
         `${getApiUrl()}/todos/${id}/${
-          !isDone ? "done" : "undone"
+          !done ? "done" : "undone"
         }`,
         {
           method: "PUT",
@@ -28,9 +27,8 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
         console.log("Not Found");
         return;
       }
-      todosContext.done(id, !isDone);
-      console.log("Updated");
-      setIsDone(prevIsDone => !prevIsDone);
+      todosContext.filter();
+      // console.log("Updated");
     } catch (err) {
       console.log(err.message);
     }
@@ -47,7 +45,7 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
         console.log("Not Found");
         return;
       }
-      todosContext.delete(id);
+      todosContext.filter();
       console.log("Deleted");
     } catch (err) {
       console.log(err.message);
@@ -58,7 +56,7 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
       <td className="d-flex">
         <Form.Check
           className="mx-auto"
-          checked={isDone}
+          checked={done}
           onChange={checkHandler}
         />
       </td>

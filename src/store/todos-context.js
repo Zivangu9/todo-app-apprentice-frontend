@@ -5,8 +5,6 @@ const TodosContext = React.createContext({
   todos: [],
   filters: {},
   filter: () => {},
-  delete: (id) => {},
-  done: (id, done) => {},
   addFilters: (name, priority, state) => {},
   addSort: (priority, dueDate) => {},
 });
@@ -14,24 +12,13 @@ const TodosContext = React.createContext({
 export const TodosContextProvider = (props) => {
   const [todos, setTodos] = useState([]);
   const [filters, setFilters] = useState({});
-  const deleteHandler = (id) => {
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.todoId !== id));
-  };
-  const doneHandler = (id, done) => {
-    setTodos((prevTodos) =>
-      prevTodos.map((todo) => {
-        if (todo.todoId !== id) todo.done = done;
-        return todo;
-      })
-    );
-  };
 
   const addFiltersHandler = (name, priority, state) => {
     let params = {};
     if (name) params.name = name;
     if (priority) params.priority = priority;
     if (state) params.done = state;
-    setFilters(params);
+    setFilters(params, getData());
   };
   const getData = useCallback(async () => {
     try {
@@ -61,8 +48,6 @@ export const TodosContextProvider = (props) => {
   const contextValue = {
     todos: todos,
     filters: filters,
-    done: doneHandler,
-    delete: deleteHandler,
     addFilters: addFiltersHandler,
     addSort: addSortHandler,
     filter: getData,
