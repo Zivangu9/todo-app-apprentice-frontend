@@ -1,5 +1,7 @@
 import { Button, Container } from "react-bootstrap";
 import Filter from "./components/todos/Filter";
+import Metrics from "./components/todos/Metrics";
+import TodoPagination from "./components/todos/TodoPagination";
 import TodosTable from "./components/todos/TodosTable";
 
 const App = () => {
@@ -8,8 +10,8 @@ const App = () => {
       <Filter />
       <Button className="my-2">+ New To Do</Button>
       <TodosTable />
-      <div>Nav</div>
-      <div>Metrics</div>
+      <TodoPagination className="mx-auto" />
+      <Metrics />
     </Container>
   );
 };
