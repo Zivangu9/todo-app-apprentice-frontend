@@ -1,10 +1,11 @@
 import fontawesome from "@fortawesome/fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { Col, Form, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
 import { getApiUrl } from "../../helper/Api";
 import TodosContext from "../../store/todos-context";
+import TodoUpdateModal from "../ui/TodoUpdateModal";
 
 fontawesome.library.add(faPen, faTrash);
 
@@ -13,9 +14,7 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
   const checkHandler = async () => {
     try {
       const response = await fetch(
-        `${getApiUrl()}/todos/${id}/${
-          !done ? "done" : "undone"
-        }`,
+        `${getApiUrl()}/todos/${id}/${!done ? "done" : "undone"}`,
         {
           method: "PUT",
         }
@@ -51,6 +50,10 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
       console.log(err.message);
     }
   };
+  const modalRef = useRef();
+  const handleShow = () => {
+    if (modalRef.current !== undefined) modalRef.current.showModal();
+  };
   return (
     <tr>
       <td className="d-flex">
@@ -67,8 +70,16 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
         <Row>
           <Col className="d-flex">
             <span className="mx-auto">
+              <TodoUpdateModal
+                ref={modalRef}
+                id={id}
+                name={name}
+                priority={priority}
+                dueDate={dueDate}
+              />
               <OverlayTrigger placement="top" overlay={<Tooltip>Edit</Tooltip>}>
                 <FontAwesomeIcon
+                  onClick={handleShow}
                   style={{ color: "#ffc107" }}
                   icon="fa-solid fa-pen"
                 />

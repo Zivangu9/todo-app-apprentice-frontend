@@ -4,7 +4,7 @@ import { getApiUrl } from "../../helper/Api";
 import TodosContext from "../../store/todos-context";
 import Input from "./Input";
 import Select from "./Select";
-const TodoModal = forwardRef((props, ref) => {
+const TodoUpdateModal = forwardRef(({id, name, priority, dueDate}, ref) => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -13,10 +13,10 @@ const TodoModal = forwardRef((props, ref) => {
   const dueDateRef = useRef();
   const todosContext = useContext(TodosContext);
   useImperativeHandle(ref, () => ({ showModal: handleShow }));
-  const handleCreteTodo = async () => {
+  const handleUpdateTodo = async () => {
     try {
-      const response = await fetch(getApiUrl() + "/todos", {
-        method: "POST",
+      const response = await fetch(getApiUrl() + "/todos/" + id, {
+        method: "PUT",
         body: JSON.stringify({
           name: nameRef.current.value,
           priority: priotityRef.current.value,
@@ -28,7 +28,7 @@ const TodoModal = forwardRef((props, ref) => {
           Accept: "application/json",
         },
       });
-      if (!response.ok && response.status !== 400) {
+      if (!response.ok && response.status !== 400 && response.status !== 404) {
         throw new Error(`Error! status: ${response.status}`);
       }
       if (response.status === 400) {
@@ -40,6 +40,11 @@ const TodoModal = forwardRef((props, ref) => {
         );
         return;
       }
+      if (response.status === 404) {
+        console.log("Not Found");
+        return;
+      }
+      // console.log("result is: ", JSON.stringify(result, null, 4));
       todosContext.filter();
       handleClose();
     } catch (err) {
@@ -49,7 +54,7 @@ const TodoModal = forwardRef((props, ref) => {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Crete a new To Do</Modal.Title>
+        <Modal.Title>Update To Do</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -57,12 +62,14 @@ const TodoModal = forwardRef((props, ref) => {
             ref={nameRef}
             label="Name"
             type="text"
+            value={name}
             placeholder="Name of To Do"
           />
           <Select
             ref={priotityRef}
             className="mt-2"
             label="Priority"
+            value={priority}
             options={[
               { value: null, text: "..." },
               { value: "LOW", text: "Low" },
@@ -72,7 +79,7 @@ const TodoModal = forwardRef((props, ref) => {
           />
           <Form.Group className="mt-2" controlId="DueDate">
             <Form.Label>Due Date</Form.Label>
-            <Form.Control type="date" ref={dueDateRef} />
+            <Form.Control type="date" defaultValue={dueDate} ref={dueDateRef} />
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -80,11 +87,11 @@ const TodoModal = forwardRef((props, ref) => {
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleCreteTodo}>
+        <Button variant="primary" onClick={handleUpdateTodo}>
           Save Changes
         </Button>
       </Modal.Footer>
     </Modal>
   );
 });
-export default TodoModal;
+export default TodoUpdateModal;
