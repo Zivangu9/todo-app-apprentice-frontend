@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { getApiUrl } from "../helper/Api";
 
 const TodosContext = React.createContext({
+  metrics: { generalAvg: 0, lowAvg: 0, mediumAvg: 0, highAvg: 0 },
   todos: [],
   filters: {},
   filter: () => {},
@@ -11,6 +12,7 @@ const TodosContext = React.createContext({
 
 export const TodosContextProvider = (props) => {
   const [todos, setTodos] = useState([]);
+  const [metrics, setMetrics] = useState({});
   const [filters, setFilters] = useState({});
 
   const addFiltersHandler = (name, priority, state) => {
@@ -19,6 +21,21 @@ export const TodosContextProvider = (props) => {
     if (priority) params.priority = priority;
     if (state) params.done = state;
     setFilters(params, getData());
+  };
+  const getMetrics = async () => {
+    try {
+      let url = new URL(getApiUrl() + "/todos/metrics");
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      // console.log("result is: ", JSON.stringify(result, null, 4));
+      // console.log(result.content);
+      setMetrics(result);
+    } catch (err) {
+      console.log(err.message);
+    }
   };
   const getData = useCallback(async () => {
     try {
@@ -36,6 +53,7 @@ export const TodosContextProvider = (props) => {
       // console.log("result is: ", JSON.stringify(result, null, 4));
       // console.log(result.content);
       setTodos(result.content);
+      getMetrics();
     } catch (err) {
       console.log(err.message);
     }
@@ -47,6 +65,7 @@ export const TodosContextProvider = (props) => {
 
   const contextValue = {
     todos: todos,
+    metrics: metrics,
     filters: filters,
     addFilters: addFiltersHandler,
     addSort: addSortHandler,
