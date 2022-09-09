@@ -3,9 +3,10 @@ import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useRef } from "react";
 import { Form, Row } from "react-bootstrap";
 import { getApiUrl } from "../../helper/Api";
+import { updateTodo } from "../../helper/HttpRequests";
 import TodosContext from "../../store/todos-context";
 import IconButton from "../ui/IconButton";
-import TodoUpdateModal from "../ui/TodoUpdateModal";
+import TodoModal from "../ui/TodoModal";
 
 fontawesome.library.add(faPen, faTrash);
 
@@ -27,7 +28,6 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
         return;
       }
       todosContext.filter();
-      // console.log("Updated");
     } catch (err) {
       console.log(err.message);
     }
@@ -67,9 +67,11 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
       <td>{priority}</td>
       <td>{dueDate}</td>
       <td>
-        <TodoUpdateModal
+        <TodoModal
           ref={modalRef}
           id={id}
+          onSave={updateTodo}
+          title="Update To Do"
           name={name}
           priority={priority}
           dueDate={dueDate}

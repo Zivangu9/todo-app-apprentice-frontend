@@ -5,6 +5,7 @@ import Metrics from "./components/Metrics";
 import TodoPagination from "./components/pagination/TodoPagination";
 import TodosTable from "./components/todos/TodosTable";
 import TodoModal from "./components/ui/TodoModal";
+import { creteTodo } from "./helper/HttpRequests";
 
 const App = () => {
   const modalRef = useRef();
@@ -14,7 +15,7 @@ const App = () => {
   };
   return (
     <Container className="pt-4">
-      <TodoModal ref={modalRef}></TodoModal>
+      <TodoModal ref={modalRef} onSave={creteTodo} title="Create a new To Do"></TodoModal>
       <Filter />
       <Button className="my-2" onClick={handleShow}>+ New To Do</Button>
       <TodosTable />
