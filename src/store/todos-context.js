@@ -1,15 +1,21 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { getApiUrl } from "../helper/Api";
-import { getMetrics } from "../helper/HttpRequests";
+import useTodosRequests from "../helper/HttpRequests";
 
 const TodosContext = React.createContext({
-  metrics: { generalAvg: 0, lowAvg: 0, mediumAvg: 0, highAvg: 0 },
   todos: [],
+  errors: [],
+  messages: [],
   pagination: { totalPages: 0, currentPage: 0 },
+  metrics: { generalAvg: 0, lowAvg: 0, mediumAvg: 0, highAvg: 0 },
+  create: () => {},
+  update: () => {},
+  delete: () => {},
+  check: () => {},
   setPage: () => {},
-  filter: () => {},
   addFilters: (name, priority, state) => {},
   addSorts: (priority, dueDate) => {},
+  filter: () => {},
 });
 
 export const TodosContextProvider = (props) => {
@@ -26,17 +32,17 @@ export const TodosContextProvider = (props) => {
   const [priorirySort, setPrioritySort] = useState("");
   const [dueDateSort, setDueDateSort] = useState("");
   const [isPrioriryFirst, setIsPrioriryFirst] = useState(true);
-
-  const ajustCurrentPage = (currentPage, totalPages) => {
-    if (currentPage >= totalPages) currentPage = totalPages - 1;
-    if (currentPage < 0) currentPage = 0;
-    return currentPage;
-  };
-  const setPageHandler = (number) => {
-    ajustCurrentPage(number, totalPages);
-    setCurrentPage(number);
-  };
-  const getData = useCallback(async () => {
+  const {
+    creteTodo,
+    updateTodo,
+    deleteTodo,
+    checkTodo,
+    getMetrics,
+    errors,
+    messages,
+  } = useTodosRequests();
+  const getTodos = async () => {
+    getMetrics(setMetrics);
     try {
       let url = new URL(getApiUrl() + "/todos");
       for (const key in filters) {
@@ -46,7 +52,7 @@ export const TodosContextProvider = (props) => {
         if (isPrioriryFirst)
           url.searchParams.append("sort", `${priorirySort} ${dueDateSort}`);
         else url.searchParams.append("sort", `${dueDateSort} ${priorirySort}`);
-      if (currentPage) url.searchParams.append("page", currentPage);
+      url.searchParams.append("page", currentPage);
       const response = await fetch(url, {
         method: "GET",
       });
@@ -54,48 +60,63 @@ export const TodosContextProvider = (props) => {
         throw new Error(`Error! status: ${response.status}`);
       }
       const result = await response.json();
-      setTodos(result.content);
+      await setTodos(result.content);
       await setTotalPages(result.totalPages);
-      setCurrentPage((prevCurrentPage) =>
+      await setCurrentPage((prevCurrentPage) =>
         ajustCurrentPage(prevCurrentPage, totalPages)
       );
-      getMetrics(setMetrics);
     } catch (err) {
       console.log(err.message);
     }
-  }, [filters, priorirySort, dueDateSort, isPrioriryFirst, currentPage, totalPages]);
+  };
   useEffect(() => {
-    getData();
-  }, [filters, getData]);
+    getTodos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, filters, priorirySort, dueDateSort]);
+  const ajustCurrentPage = (currentPage, totalPages) => {
+    if (currentPage >= totalPages) currentPage = totalPages - 1;
+    if (currentPage < 0) currentPage = 0;
+    return currentPage;
+  };
+  const setPageHandler = useCallback(
+    (number) => {
+      ajustCurrentPage(number, totalPages);
+      setCurrentPage(number);
+    },
+    [totalPages]
+  );
+
   const addFiltersHandler = (name, priority, state) => {
     let params = {};
     if (name) params.name = name;
     if (priority) params.priority = priority;
     if (state) params.done = state;
-    setFilters(params, getData());
+    setFilters(params);
   };
-  const addSortsHandler = useCallback(
-    async (priority, dueDate) => {
-      if (priorirySort !== priority) {
-        await setIsPrioriryFirst(true);
-        await setPrioritySort(priority);
-      }
-      if (dueDateSort !== dueDate) {
-        await setIsPrioriryFirst(false);
-        await setDueDateSort(dueDate);
-      }
-      getData();
-    },
-    [getData, dueDateSort, priorirySort, setPrioritySort, setDueDateSort, setIsPrioriryFirst]
-  );
+  const addSortsHandler = (priority, dueDate) => {
+    if (priorirySort !== priority) {
+      setIsPrioriryFirst(true);
+      setPrioritySort(priority);
+    }
+    if (dueDateSort !== dueDate) {
+      setIsPrioriryFirst(false);
+      setDueDateSort(dueDate);
+    }
+  };
   const contextValue = {
     todos: todos,
+    errors: errors,
+    messages: messages,
     pagination: { totalPages, currentPage },
     metrics: metrics,
+    create: creteTodo,
+    update: updateTodo,
+    delete: deleteTodo,
+    check: checkTodo,
     setPage: setPageHandler,
     addFilters: addFiltersHandler,
     addSorts: addSortsHandler,
-    filter: getData,
+    filter: getTodos,
   };
 
   return (

@@ -7,11 +7,14 @@ const TodoPagination = () => {
   const todosContext = useContext(TodosContext);
   const currentPage = todosContext.pagination.currentPage + 1;
   const totalPages = todosContext.pagination.totalPages;
+  // if (currentPage > totalPages) todosContext.setPage(totalPages - 1);
 
   const setPagehandler = (page) => {
     todosContext.setPage(page);
+    // await todosContext.filter();
   };
-  const { isFirstPage, isLastPage, spaceStart, spaceEnd, pageComponents } = TodoVisiblePages(currentPage, totalPages, setPagehandler);
+  const { isFirstPage, isLastPage, spaceStart, spaceEnd, pageComponents } =
+    TodoVisiblePages(currentPage, totalPages, setPagehandler);
   return (
     <div className="d-flex">
       <Pagination className="mx-auto">
