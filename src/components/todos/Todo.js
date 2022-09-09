@@ -2,8 +2,7 @@ import fontawesome from "@fortawesome/fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useRef } from "react";
 import { Form, Row } from "react-bootstrap";
-import { getApiUrl } from "../../helper/Api";
-import { updateTodo } from "../../helper/HttpRequests";
+import { checkTodo, deleteTodo, updateTodo } from "../../helper/HttpRequests";
 import TodosContext from "../../store/todos-context";
 import IconButton from "../ui/IconButton";
 import TodoModal from "../ui/TodoModal";
@@ -13,42 +12,12 @@ fontawesome.library.add(faPen, faTrash);
 const Todo = ({ id, done, name, priority, dueDate }) => {
   const todosContext = useContext(TodosContext);
   const checkHandler = async () => {
-    try {
-      const response = await fetch(
-        `${getApiUrl()}/todos/${id}/${!done ? "done" : "undone"}`,
-        {
-          method: "PUT",
-        }
-      );
-      if (!response.ok && response.status !== 404) {
-        throw new Error(`Error! status: ${response.status}`);
-      }
-      if (response.status === 404) {
-        console.log("Not Found");
-        return;
-      }
-      todosContext.filter();
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
+    await checkTodo(id, done);
+    todosContext.filter();
+  }
   const deleteHandler = async () => {
-    try {
-      const response = await fetch(getApiUrl() + "/todos/" + id, {
-        method: "DELETE",
-      });
-      if (!response.ok && response.status !== 404) {
-        throw new Error(`Error! status: ${response.status}`);
-      }
-      if (response.status === 404) {
-        console.log("Not Found");
-        return;
-      }
-      todosContext.filter();
-      // console.log("Deleted");
-    } catch (err) {
-      console.log(err.message);
-    }
+    await deleteTodo(id);
+    todosContext.filter();
   };
   const modalRef = useRef();
   const handleShow = () => {

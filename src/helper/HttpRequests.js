@@ -65,3 +65,39 @@ export const updateTodo = async ({id, name, priority, dueDate}) => {
     console.log(err.message);
   }
 };
+
+export const deleteTodo = async (id) => {
+  try {
+    const response = await fetch(getApiUrl() + "/todos/" + id, {
+      method: "DELETE",
+    });
+    if (!response.ok && response.status !== 404) {
+      throw new Error(`Error! status: ${response.status}`);
+    }
+    if (response.status === 404) {
+      console.log("Not Found");
+      return;
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+export const checkTodo = async (id, done) => {
+  try {
+    const response = await fetch(
+      `${getApiUrl()}/todos/${id}/${!done ? "done" : "undone"}`,
+      {
+        method: "PUT",
+      }
+    );
+    if (!response.ok && response.status !== 404) {
+      throw new Error(`Error! status: ${response.status}`);
+    }
+    if (response.status === 404) {
+      console.log("Not Found");
+      return;
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
