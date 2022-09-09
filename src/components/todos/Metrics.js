@@ -18,7 +18,7 @@ const Metrics = () => {
             </Row>
           </Col>
           <Col>
-            <Row>Average time to finish tasks:</Row>
+            <Row>Average time to finish tasks by priority:</Row>
             <Row>{`Low: ${convertSeconds(todosContext.metrics.lowAvg)}`}</Row>
             <Row>{`Medium: ${convertSeconds(todosContext.metrics.mediumAvg)}`}</Row>
             <Row>{`High: ${convertSeconds(todosContext.metrics.highAvg)}`}</Row>

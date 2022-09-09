@@ -1,10 +1,10 @@
 import fontawesome from "@fortawesome/fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useRef } from "react";
-import { Col, Form, OverlayTrigger, Row, Tooltip } from "react-bootstrap";
+import { Form, Row } from "react-bootstrap";
 import { getApiUrl } from "../../helper/Api";
 import TodosContext from "../../store/todos-context";
+import IconButton from "../ui/IconButton";
 import TodoUpdateModal from "../ui/TodoUpdateModal";
 
 fontawesome.library.add(faPen, faTrash);
@@ -67,39 +67,26 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
       <td>{priority}</td>
       <td>{dueDate}</td>
       <td>
+        <TodoUpdateModal
+          ref={modalRef}
+          id={id}
+          name={name}
+          priority={priority}
+          dueDate={dueDate}
+        />
         <Row>
-          <Col className="d-flex">
-            <span className="mx-auto">
-              <TodoUpdateModal
-                ref={modalRef}
-                id={id}
-                name={name}
-                priority={priority}
-                dueDate={dueDate}
-              />
-              <OverlayTrigger placement="top" overlay={<Tooltip>Edit</Tooltip>}>
-                <FontAwesomeIcon
-                  onClick={handleShow}
-                  style={{ color: "#ffc107" }}
-                  icon="fa-solid fa-pen"
-                />
-              </OverlayTrigger>
-            </span>
-          </Col>
-          <Col className="d-flex">
-            <span className="mx-auto">
-              <OverlayTrigger
-                placement="top"
-                overlay={<Tooltip>Delete</Tooltip>}
-              >
-                <FontAwesomeIcon
-                  onClick={deleteHandler}
-                  style={{ color: "#dc3545" }}
-                  icon="fa-solid fa-trash"
-                />
-              </OverlayTrigger>
-            </span>
-          </Col>
+          <IconButton
+            icon="fa-solid fa-pen"
+            color="#ffc107"
+            tooltip="Edit"
+            onClick={handleShow}
+          />
+          <IconButton
+            icon="fa-solid fa-trash"
+            color="#dc3545"
+            tooltip="Delete"
+            onClick={deleteHandler}
+          />
         </Row>
       </td>
     </tr>
