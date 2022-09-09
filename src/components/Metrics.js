@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Card, Col, Row } from "react-bootstrap";
-import { convertSeconds } from "../../helper/Time";
-import TodosContext from "../../store/todos-context";
+import { convertSeconds } from "../helper/Time";
+import TodosContext from "../store/todos-context";
 
 const Metrics = () => {
   const todosContext = useContext(TodosContext);

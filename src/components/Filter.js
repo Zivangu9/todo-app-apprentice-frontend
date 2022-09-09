@@ -1,8 +1,8 @@
 import { useContext, useRef } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
-import TodosContext from "../../store/todos-context";
-import Input from "../ui/Input";
-import Select from "../ui/Select";
+import TodosContext from "../store/todos-context";
+import Input from "./ui/Input";
+import Select from "./ui/Select";
 
 const Filter = () => {
   const todosCotext = useContext(TodosContext);

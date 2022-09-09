@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { Button, Container } from "react-bootstrap";
-import Filter from "./components/todos/Filter";
-import Metrics from "./components/todos/Metrics";
-import TodoPagination from "./components/todos/TodoPagination";
+import Filter from "./components/Filter";
+import Metrics from "./components/Metrics";
+import TodoPagination from "./components/pagination/TodoPagination";
 import TodosTable from "./components/todos/TodosTable";
 import TodoModal from "./components/ui/TodoModal";
 
