@@ -4,17 +4,14 @@ export const convertSeconds = (seconds) => {
     time.days = Math.floor(seconds / 86400);
     seconds %= 86400;
   }
-  console.log(seconds);
   if (seconds >= 3600) {
     time.hours = Math.floor(seconds / 3600);
     seconds %= 3600;
   }
-  console.log(seconds);
   if (seconds >= 60) {
     time.minutes = Math.floor(seconds / 60);
     seconds %= 60;
   }
-  console.log(seconds);
   time.seconds = seconds;
   if (time.days > 0)
     return `${time.days} days and ${time.hours}:${time.minutes} hours`;

@@ -6,6 +6,7 @@ const Input = forwardRef(({ label, type, placeholder, value }, ref) => {
     <Form.Group controlId={label}>
       <Form.Label>{label}</Form.Label>
       <Form.Control
+        autoComplete="off"
         ref={ref}
         type={type}
         placeholder={placeholder}

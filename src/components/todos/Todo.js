@@ -45,7 +45,7 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
         return;
       }
       todosContext.filter();
-      console.log("Deleted");
+      // console.log("Deleted");
     } catch (err) {
       console.log(err.message);
     }
