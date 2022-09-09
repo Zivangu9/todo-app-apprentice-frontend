@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { getApiUrl } from "../helper/Api";
+import { getMetrics } from "../helper/HttpRequests";
 
 const TodosContext = React.createContext({
   metrics: { generalAvg: 0, lowAvg: 0, mediumAvg: 0, highAvg: 0 },
@@ -35,19 +36,6 @@ export const TodosContextProvider = (props) => {
     ajustCurrentPage(number, totalPages);
     setCurrentPage(number);
   };
-  const getMetrics = async () => {
-    try {
-      let url = new URL(getApiUrl() + "/todos/metrics");
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Error! status: ${response.status}`);
-      }
-      const result = await response.json();
-      setMetrics(result);
-    } catch (err) {
-      console.log(err.message);
-    }
-  };
   const getData = useCallback(async () => {
     try {
       let url = new URL(getApiUrl() + "/todos");
@@ -71,7 +59,7 @@ export const TodosContextProvider = (props) => {
       setCurrentPage((prevCurrentPage) =>
         ajustCurrentPage(prevCurrentPage, totalPages)
       );
-      getMetrics();
+      getMetrics(setMetrics);
     } catch (err) {
       console.log(err.message);
     }

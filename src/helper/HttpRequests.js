@@ -101,3 +101,16 @@ export const checkTodo = async (id, done) => {
     console.log(err.message);
   }
 };
+export const getMetrics = async (setMetrics) => {
+  try {
+    let url = new URL(getApiUrl() + "/todos/metrics");
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    setMetrics(result);
+  } catch (err) {
+    console.log(err.message);
+  }
+};
