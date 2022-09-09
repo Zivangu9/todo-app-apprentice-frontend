@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import TodosContext from "../../store/todos-context";
 import Todo from "./Todo";
@@ -17,8 +17,15 @@ const TodosTable = ({ todos }) => {
     else if (dueDateSort === "asc") setDueDateSort("desc");
     else setDueDateSort("");
   };
+
   const todosContext = useContext(TodosContext);
   todos = todosContext.todos;
+  const { addSorts } = todosContext;
+  useEffect(() => {
+    const priority = priorirySort ? `priority-${priorirySort}` : "";
+    const dueDate = dueDateSort ? `due_date-${dueDateSort}` : "";
+    addSorts(priority, dueDate);
+  }, [priorirySort, dueDateSort, addSorts]);
   return (
     <Table striped bordered hover>
       <thead>

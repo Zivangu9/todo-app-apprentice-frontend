@@ -14,9 +14,17 @@ export const convertSeconds = (seconds) => {
   }
   time.seconds = seconds;
   if (time.days > 0)
-    return `${time.days} days and ${time.hours}:${time.minutes} hours`;
-  if (time.hours > 0) return `${time.hours}:${time.minutes} hours`;
-  if (time.minutes > 0) return `${time.minutes}:${time.seconds} minutes`;
-  if (time.seconds > 0) return `${time.seconds} seconds`;
+    return `${time.days} days and ${("0" + time.hours).slice(-2)}:${(
+      "0" + time.minutes
+    ).slice(-2)} hours`;
+  if (time.hours > 0)
+    return `${("0" + time.hours).slice(-2)}:${("0" + time.minutes).slice(
+      -2
+    )} hours`;
+  if (time.minutes > 0)
+    return `${("0" + time.minutes).slice(-2)}:${("0" + time.seconds).slice(
+      -2
+    )} minutes`;
+  if (time.seconds > 0) return `${("0" + time.seconds).slice(-2)} seconds`;
   return "No Data";
 };

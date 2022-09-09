@@ -6,18 +6,15 @@ const TodosContext = React.createContext({
   todos: [],
   pagination: { totalPages: 0, currentPage: 0 },
   setPage: () => {},
-  filters: {},
   filter: () => {},
   addFilters: (name, priority, state) => {},
-  addSort: (priority, dueDate) => {},
+  addSorts: (priority, dueDate) => {},
 });
 
 export const TodosContextProvider = (props) => {
   const [todos, setTodos] = useState([]);
-  const [pagination, setPagination] = useState({
-    totalPages: 0,
-    currentPage: 0,
-  });
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [metrics, setMetrics] = useState({
     generalAvg: 0,
     lowAvg: 0,
@@ -25,26 +22,18 @@ export const TodosContextProvider = (props) => {
     highAvg: 0,
   });
   const [filters, setFilters] = useState({});
+  const [priorirySort, setPrioritySort] = useState("");
+  const [dueDateSort, setDueDateSort] = useState("");
+  const [isPrioriryFirst, setIsPrioriryFirst] = useState(true);
 
-  const addFiltersHandler = (name, priority, state) => {
-    let params = {};
-    if (name) params.name = name;
-    if (priority) params.priority = priority;
-    if (state) params.done = state;
-    setFilters(params, getData());
-  };
   const ajustCurrentPage = (currentPage, totalPages) => {
     if (currentPage >= totalPages) currentPage = totalPages - 1;
     if (currentPage < 0) currentPage = 0;
     return currentPage;
   };
   const setPageHandler = (number) => {
-    setPagination((prevPagination) => {
-      return {
-        ...prevPagination,
-        currentPage: ajustCurrentPage(number, prevPagination.totalPages),
-      };
-    });
+    ajustCurrentPage(number, totalPages);
+    setCurrentPage(number);
   };
   const getMetrics = async () => {
     try {
@@ -54,8 +43,6 @@ export const TodosContextProvider = (props) => {
         throw new Error(`Error! status: ${response.status}`);
       }
       const result = await response.json();
-      // console.log("result is: ", JSON.stringify(result, null, 4));
-      // console.log(result.content);
       setMetrics(result);
     } catch (err) {
       console.log(err.message);
@@ -67,8 +54,11 @@ export const TodosContextProvider = (props) => {
       for (const key in filters) {
         url.searchParams.append(key, filters[key]);
       }
-      if (pagination.currentPage)
-        url.searchParams.append("page", pagination.currentPage);
+      if (priorirySort || dueDateSort)
+        if (isPrioriryFirst)
+          url.searchParams.append("sort", `${priorirySort} ${dueDateSort}`);
+        else url.searchParams.append("sort", `${dueDateSort} ${priorirySort}`);
+      if (currentPage) url.searchParams.append("page", currentPage);
       const response = await fetch(url, {
         method: "GET",
       });
@@ -76,36 +66,47 @@ export const TodosContextProvider = (props) => {
         throw new Error(`Error! status: ${response.status}`);
       }
       const result = await response.json();
-      // console.log("result is: ", JSON.stringify(result, null, 4));
-      // console.log(result.content);
       setTodos(result.content);
-      setPagination((prevPagination) => {
-        return {
-          totalPages: result.totalPages,
-          currentPage: ajustCurrentPage(
-            prevPagination.currentPage,
-            result.totalPages
-          ),
-        };
-      });
+      await setTotalPages(result.totalPages);
+      setCurrentPage((prevCurrentPage) =>
+        ajustCurrentPage(prevCurrentPage, totalPages)
+      );
       getMetrics();
     } catch (err) {
       console.log(err.message);
     }
-  }, [filters, pagination.currentPage]);
+  }, [filters, priorirySort, dueDateSort, isPrioriryFirst, currentPage, totalPages]);
   useEffect(() => {
     getData();
   }, [filters, getData]);
-  const addSortHandler = (priority, dueDate) => {};
-
+  const addFiltersHandler = (name, priority, state) => {
+    let params = {};
+    if (name) params.name = name;
+    if (priority) params.priority = priority;
+    if (state) params.done = state;
+    setFilters(params, getData());
+  };
+  const addSortsHandler = useCallback(
+    async (priority, dueDate) => {
+      if (priorirySort !== priority) {
+        await setIsPrioriryFirst(true);
+        await setPrioritySort(priority);
+      }
+      if (dueDateSort !== dueDate) {
+        await setIsPrioriryFirst(false);
+        await setDueDateSort(dueDate);
+      }
+      getData();
+    },
+    [getData, dueDateSort, priorirySort, setPrioritySort, setDueDateSort, setIsPrioriryFirst]
+  );
   const contextValue = {
     todos: todos,
-    pagination: pagination,
+    pagination: { totalPages, currentPage },
     metrics: metrics,
-    filters: filters,
     setPage: setPageHandler,
     addFilters: addFiltersHandler,
-    addSort: addSortHandler,
+    addSorts: addSortsHandler,
     filter: getData,
   };
 
