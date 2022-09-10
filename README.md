@@ -38,3 +38,20 @@ Si todo está corriendo bien la aplicación estará corriendo en el puerto 8080.
 ```
  http://localhost:8080
 ```
+
+## Estructura del proyecto
+```
+src
+├── components
+│   ├── pagination
+│   ├── todos
+│   └── ui
+├── helpers
+├── images
+└── store
+```
+### Descripción
+- **Components**: Todos los compontes que se usan en la aplicacion.
+- **Helpers**: Archivos con funciones de ayuda.
+- **Images**: Imagenes que se usan en la aplicacion.
+- **Store**: Archivos donde se crean los context de la aplicacion.
