@@ -5,6 +5,7 @@ import { Form, Row } from "react-bootstrap";
 import TodosContext from "../../store/todos-context";
 import IconButton from "../ui/IconButton";
 import TodoModal from "../ui/TodoModal";
+import "./Todo.css";
 
 fontawesome.library.add(faPen, faTrash);
 
@@ -13,7 +14,7 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
   const checkHandler = async () => {
     await todosContext.check(id, done);
     todosContext.filter();
-  }
+  };
   const deleteHandler = async () => {
     await todosContext.delete(id);
     todosContext.filter();
@@ -22,8 +23,17 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
   const handleShow = () => {
     if (modalRef.current !== undefined) modalRef.current.showModal();
   };
+  const weeksUntilDueDate = (new Date(dueDate) - Date.now()) / 604800000;
+  const timeClassName = !dueDate
+    ? ""
+    : weeksUntilDueDate < 1
+    ? "table-danger"
+    : weeksUntilDueDate < 2
+    ? "table-warning"
+    : "table-success";
+  const trClassName = done ? "strikeout" : timeClassName;
   return (
-    <tr>
+    <tr className={trClassName}>
       <td className="d-flex">
         <Form.Check
           className="mx-auto"
@@ -31,7 +41,7 @@ const Todo = ({ id, done, name, priority, dueDate }) => {
           onChange={checkHandler}
         />
       </td>
-      <td>{name}</td>
+      <td className="strikeout">{name}</td>
       <td>{priority}</td>
       <td>{dueDate}</td>
       <td>
