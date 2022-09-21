@@ -29,9 +29,7 @@ export const TodosContextProvider = (props) => {
     highAvg: 0,
   });
   const [filters, setFilters] = useState({});
-  const [priorirySort, setPrioritySort] = useState("");
-  const [dueDateSort, setDueDateSort] = useState("");
-  const [isPrioriryFirst, setIsPrioriryFirst] = useState(true);
+  const [sorts, setSorts] = useState([]);
   const {
     creteTodo,
     updateTodo,
@@ -48,10 +46,7 @@ export const TodosContextProvider = (props) => {
       for (const key in filters) {
         url.searchParams.append(key, filters[key]);
       }
-      if (priorirySort || dueDateSort)
-        if (isPrioriryFirst)
-          url.searchParams.append("sort", `${priorirySort} ${dueDateSort}`);
-        else url.searchParams.append("sort", `${dueDateSort} ${priorirySort}`);
+      if (sorts.length > 0) url.searchParams.append("sort", sorts.join(" "));
       url.searchParams.append("page", currentPage);
       const response = await fetch(url, {
         method: "GET",
@@ -60,9 +55,9 @@ export const TodosContextProvider = (props) => {
         throw new Error(`Error! status: ${response.status}`);
       }
       const result = await response.json();
-      await setTodos(result.content);
-      await setTotalPages(result.totalPages);
-      await setCurrentPage((prevCurrentPage) =>
+      setTodos(result.content);
+      setTotalPages(result.totalPages);
+      setCurrentPage((prevCurrentPage) =>
         ajustCurrentPage(prevCurrentPage, totalPages)
       );
     } catch (err) {
@@ -72,7 +67,7 @@ export const TodosContextProvider = (props) => {
   useEffect(() => {
     getTodos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, filters, priorirySort, dueDateSort]);
+  }, [currentPage, filters, sorts]);
   const ajustCurrentPage = (currentPage, totalPages) => {
     if (currentPage >= totalPages) currentPage = totalPages - 1;
     if (currentPage < 0) currentPage = 0;
@@ -93,15 +88,13 @@ export const TodosContextProvider = (props) => {
     if (state) params.done = state;
     setFilters(params);
   };
-  const addSortsHandler = (priority, dueDate) => {
-    if (priorirySort !== priority) {
-      setIsPrioriryFirst(true);
-      setPrioritySort(priority);
-    }
-    if (dueDateSort !== dueDate) {
-      setIsPrioriryFirst(false);
-      setDueDateSort(dueDate);
-    }
+  const addSortsHandler = (sort) => {
+    const splitedSort = sort.split("-");
+    setSorts((prevSorts) => {
+      let newSorts = prevSorts.filter((s) => !s.startsWith(splitedSort[0]));
+      if (splitedSort[1]) newSorts.push(sort);
+      return newSorts;
+    });
   };
   const contextValue = {
     todos: todos,

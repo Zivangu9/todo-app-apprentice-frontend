@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useRef } from "react";
 import { Button, Container } from "react-bootstrap";
 import Filter from "./components/Filter";
 import Metrics from "./components/Metrics";
@@ -16,10 +16,6 @@ const App = () => {
   };
   const todosContext = useContext(TodosContext);
   
-  useEffect(() => {
-    todosContext.filter();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[]);
   return (
     <Container className="pt-4">
       <ToastsCollector />
